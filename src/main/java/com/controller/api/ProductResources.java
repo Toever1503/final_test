@@ -21,16 +21,19 @@ public class ProductResources {
         this.productService = productService;
     }
 
+    @CrossOrigin("*")
     @GetMapping
     public Object getProducts(Pageable pageable) {
         return ResponseDto.of(this.productService.findAll(pageable), "Get all");
     }
 
+    @CrossOrigin("*")
     @GetMapping("{id}")
     public Object getProduct(@PathVariable("id") Long id) {
         return ResponseDto.of(this.productService.findById(id), "Get");
     }
 
+    @CrossOrigin("*")
     @PostMapping
     @ResponseStatus(value = org.springframework.http.HttpStatus.CREATED)
     public Object addProduct(ProductModel model, @RequestPart("file") MultipartFile file) throws IOException {
@@ -40,12 +43,15 @@ public class ProductResources {
         System.out.println(model);
         return ResponseDto.of(this.productService.add(model), "Add");
     }
+
+    @CrossOrigin("*")
     @GetMapping("/category/{id}")
     public Object getProductByCategory(@PathVariable("id") Long categoryId,
                                        @RequestParam(name = "page", required = false, defaultValue = "0") int page) {
         return ResponseDto.of(this.productService.findAllByCategoryId(categoryId, PageRequest.of(page, 4)), "Get category");
     }
 
+    @CrossOrigin("*")
     @PostMapping("{id}")
     public Object updateProduct(@PathVariable("id") Long id, ProductModel model, @RequestPart("file") MultipartFile file) throws IOException {
         model.setId(id);
@@ -56,11 +62,13 @@ public class ProductResources {
         return ResponseDto.of(this.productService.update(model), "Update");
     }
 
+    @CrossOrigin("*")
     @DeleteMapping("{id}")
     public Object deleteProduct(@PathVariable("id") Long id) {
         return ResponseDto.of(this.productService.deleteById(id), "Deleted");
     }
 
+    @CrossOrigin("*")
     @GetMapping("/search")
     public Object searchProduct(@RequestParam(name = "q", required = false, defaultValue = "") String q,
                                 @RequestParam(name = "page", required = false, defaultValue = "0") int page) {

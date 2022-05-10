@@ -14,7 +14,6 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/user")
-@Secured("ROLE_ADMIN")
 public class UserResources {
 
     private final UserService userService;
@@ -23,6 +22,7 @@ public class UserResources {
         this.userService = userService;
     }
 
+    @CrossOrigin("*")
     @PostMapping
     @ResponseStatus(value = org.springframework.http.HttpStatus.CREATED)
     public Object add(UserModel model, @RequestPart(name="file", required = false) MultipartFile file) throws IOException {
@@ -33,6 +33,7 @@ public class UserResources {
         return ResponseDto.of(this.userService.add(model), "Created");
     }
 
+    @CrossOrigin("*")
     @PostMapping("{id}")
     public Object update(@PathVariable("id") Long id, UserModel model, @RequestPart(name="file", required = false) MultipartFile file) throws IOException {
         model.setId(id);
@@ -43,6 +44,7 @@ public class UserResources {
         return ResponseDto.of(this.userService.update(model), "Update");
     }
 
+    @CrossOrigin("*")
     @DeleteMapping("{id}")
     public Object deleteById(@PathVariable("id") Long id) {
         return ResponseDto.of(this.userService.deleteById(id), "Deleted");
