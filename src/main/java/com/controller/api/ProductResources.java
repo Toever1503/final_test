@@ -6,7 +6,6 @@ import com.service.ProductService;
 import com.utils.FileUtilsService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,13 +13,22 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/product")
-@Secured("ROLE_ADMIN")
 public class ProductResources {
 
     private final ProductService productService;
 
     public ProductResources(ProductService productService) {
         this.productService = productService;
+    }
+
+    @GetMapping
+    public Object getProducts(Pageable pageable) {
+        return ResponseDto.of(this.productService.findAll(pageable), "Get all");
+    }
+
+    @GetMapping("{id}")
+    public Object getProduct(@PathVariable("id") Long id) {
+        return ResponseDto.of(this.productService.findById(id), "Get");
     }
 
     @PostMapping

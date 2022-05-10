@@ -30,27 +30,28 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.authorizeRequests().anyRequest()
-                .permitAll()
-//                .authenticated()
-        ;
-
-
-        http.formLogin()
-                .loginPage("/login")
-                .loginProcessingUrl("/login")
-                .successHandler(
-                        (request, response, authentication) -> {
-                            if(request.getParameter("redirect") != null) {
-                                response.sendRedirect(request.getParameter("redirect").toString());
-                            }
-                            else response.sendRedirect("/");
-                        }
-                ).and().logout().logoutUrl("/logout")
-                .and()
-                .rememberMe()
-                .key(UUID.randomUUID().toString())
-                .useSecureCookie(true);
+        http.authorizeRequests().anyRequest().permitAll();
+//        http.authorizeRequests().anyRequest()
+//                .permitAll()
+////                .authenticated()
+//        ;
+//
+//
+//        http.formLogin()
+//                .loginPage("/login")
+//                .loginProcessingUrl("/login")
+//                .successHandler(
+//                        (request, response, authentication) -> {
+//                            if(request.getParameter("redirect") != null) {
+//                                response.sendRedirect(request.getParameter("redirect").toString());
+//                            }
+//                            else response.sendRedirect("/");
+//                        }
+//                ).and().logout().logoutUrl("/logout")
+//                .and()
+//                .rememberMe()
+//                .key(UUID.randomUUID().toString())
+//                .useSecureCookie(true);
 
 //        http.oauth2Login()
 //                .successHandler((req, res, attributes) -> {

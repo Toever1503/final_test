@@ -16,10 +16,10 @@ public class CartFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("CartFilter");
-        if (request.getSession().getAttribute("Cart") == null) {
-            Map<Long, CartProduct> cart = new HashMap<>();
-            request.getSession().setAttribute("Cart", cart);
-        }
+//        if (request.getSession().getAttribute("Cart") == null) {
+//            Map<Long, CartProduct> cart = new HashMap<>();
+//            request.getSession().setAttribute("Cart", cart);
+//        }
         filterChain.doFilter(request, response);
     }
 }

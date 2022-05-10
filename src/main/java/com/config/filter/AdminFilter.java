@@ -19,20 +19,20 @@ public class AdminFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) servletRequest;
-        HttpServletResponse res = (HttpServletResponse) servletResponse;
-        String redirect = "/login?force=true&redirect=" + req.getServletPath();
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null) {
-            res.sendRedirect(redirect);
-            return;
-        } else {
-            if (!authentication.getAuthorities().stream().anyMatch(au -> au.getAuthority().equals("ROLE_ADMIN"))) {
-                res.sendRedirect(redirect);
-                return;
-            }
-        }
+//        HttpServletRequest req = (HttpServletRequest) servletRequest;
+//        HttpServletResponse res = (HttpServletResponse) servletResponse;
+//        String redirect = "/login?force=true&redirect=" + req.getServletPath();
+//
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        if (authentication == null) {
+//            res.sendRedirect(redirect);
+//            return;
+//        } else {
+//            if (!authentication.getAuthorities().stream().anyMatch(au -> au.getAuthority().equals("ROLE_ADMIN"))) {
+//                res.sendRedirect(redirect);
+//                return;
+//            }
+//        }
         filterChain.doFilter(req, res);
     }
 

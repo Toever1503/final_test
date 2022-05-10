@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/category")
-@Secured("ROLE_ADMIN")
 public class CategoryResources {
 
     private final CategoryService categoryService;
