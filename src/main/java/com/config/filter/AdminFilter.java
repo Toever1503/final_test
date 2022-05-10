@@ -19,8 +19,8 @@ public class AdminFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-//        HttpServletRequest req = (HttpServletRequest) servletRequest;
-//        HttpServletResponse res = (HttpServletResponse) servletResponse;
+        HttpServletRequest req = (HttpServletRequest) servletRequest;
+        HttpServletResponse res = (HttpServletResponse) servletResponse;
 //        String redirect = "/login?force=true&redirect=" + req.getServletPath();
 //
 //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
