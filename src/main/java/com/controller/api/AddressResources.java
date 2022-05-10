@@ -21,13 +21,11 @@ public class AddressResources {
         this.provinceRepository = provinceRepository;
     }
 
-    @CrossOrigin("*")
     @GetMapping("districts/{provinceId}")
     public Object getDistricts(@PathVariable Integer provinceId) {
         return ResponseDto.of(this.districtRepository.findAllByProvinceId(provinceId), "Get districts");
     }
 
-    @CrossOrigin("*")
     @GetMapping("wards/{districtId}")
     public Object getWards(@PathVariable Integer districtId) {
         return ResponseDto.of(this.wardRepository.findByDistrictId(districtId), "Get wards");

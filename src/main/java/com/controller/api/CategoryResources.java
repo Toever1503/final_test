@@ -17,7 +17,6 @@ public class CategoryResources {
         this.categoryService = categoryService;
     }
 
-    @CrossOrigin("*")
     @PostMapping
     @ResponseStatus(value = org.springframework.http.HttpStatus.CREATED)
     public Object add(CategoryModel model) {
@@ -26,7 +25,6 @@ public class CategoryResources {
         return ResponseDto.of(this.categoryService.add(model), "Create");
     }
 
-    @CrossOrigin("*")
     @PostMapping("{id}")
     public Object update(@PathVariable("id") Long id, CategoryModel model) {
         model.setId(id);
@@ -39,7 +37,6 @@ public class CategoryResources {
         return ResponseDto.of(this.categoryService.update(model), "Update");
     }
 
-    @CrossOrigin("*")
     @DeleteMapping("{id}")
     public Object deleteById(@PathVariable("id") Long id) {
         return ResponseDto.of(this.categoryService.deleteById(id), "Delete");

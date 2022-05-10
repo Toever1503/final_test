@@ -17,7 +17,6 @@ public class CommentResources {
         this.commentService = commentService;
     }
 
-    @CrossOrigin("*")
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
     public Object addRating(@RequestBody CommentModel commentModel) {
