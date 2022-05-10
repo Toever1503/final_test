@@ -24,4 +24,10 @@ public class CommentResources {
         commentModel.setId(null);
         return ResponseDto.of(commentService.add(commentModel), "Added comment");
     }
+    @GetMapping("/findAllByProductId/{id}")
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public Object findAllByProductId(@PathVariable("id") Long id){
+        return ResponseDto.of(commentService.findAllByProduct(id),"findAllByProductId comment");
+    }
+
 }
