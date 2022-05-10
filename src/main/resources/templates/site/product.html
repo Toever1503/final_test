@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+    />
+
+    <!-- Icon -->
+    <link
+            rel="stylesheet"
+            href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
+    <!-- icon -->
+
+    <!-- Google fonts End -->
+
+    <!-- custon style Sheet & JavaScript -->
+    <link rel="stylesheet" href="/static/css/index.css"/>
+    <link rel="stylesheet" href="/static/css/shop.css"/>
+    <link rel="stylesheet" href="/static/css/blog.css"/>
+    <link rel="stylesheet" href="/static/css/product.css"/>
+    <link rel="stylesheet" href="/static/css/contactus.css"/>
+    <script src="/static/js/index.js" defer></script>
+    <script src="/static/js/product.js" defer></script>
+    <!-- custon style Sheet & JavaScript -->
+    <title>Ecommerce Website</title>
+</head>
+<body class="home">
+<header th:replace="~{/component/site :: header}"/>
+
+<!-- ==================Single Product-============================= -->
+<section class="single-product grid">
+    <div>
+        <img th:src="${product.image}" th:alt="${product.name}"/>
+    </div>
+    <div class="product-info grid">
+        <h1 class="fs-poppins fs-400 blod-900" th:text="${product.name}">Beats</h1>
+        <div class="star-icon flex">
+            <div>
+                <i class="uil text-red uil-star"></i>
+                <i class="uil text-red uil-star"></i>
+                <i class="uil text-red uil-star"></i>
+                <i class="uil text-red uil-star"></i>
+                <i class="uil uil-star"></i>
+            </div>
+            <div>
+                <p class="fs-montserrat fs-100" th:text="|${comments.size} customer review|">(1 customer review)</p>
+            </div>
+        </div>
+
+        <div class="price">
+            <p class="bold-700 fs-poppins fs-300">$ [[${product.price}]]</p>
+        </div>
+
+        <div>
+            <p class="fs-montserrat lineheight" th:text="${product.description}">
+            </p>
+        </div>
+
+        <div class="product-add-cart flex">
+            <input type="number" min="0" id="quantity-p" value="1" max="10" class="bg-gray fs-poppins"/>
+            <button id="product-add"
+                    class="product-btn large-btn bg-red text-white fs-poppins fs-50"
+                    th:onclick="addCart([[${product.id}]], document.getElementById('quantity-p').value)"
+            >
+                Add to cart
+            </button>
+        </div>
+
+        <div>
+            <p class="fs-montserrat text-red">
+                <span class="text-black">Category: [[${product.category.name}]]</span>
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- ==================Single Product-============================= -->
+
+<!-- ==============Product Description====================== -->
+
+<section class="product-description grid">
+    <div class="product-taps flex">
+        <a id="dis-tab" class="fs-poppins fs-200 text-black bold-700 active-tab"
+        >Description</a
+        >
+        <a
+                id="rev-tab"
+                class="fs-poppins fs-200 text-black bold-700 tabs-light-text"
+                th:text="|Reviews (${comments.size})|"
+        ></a
+        >
+    </div>
+
+    <div class="description grid" data-tab="false">
+        <h3 class="text-black fs-poppins fs-300">Description</h3>
+        <p class="fs-montserrat lineheight">
+            [[${product.description}]]
+        </p>
+    </div>
+
+    <article class="reviews-container" data-tab="false">
+        <div class="reviews">
+            <p class="text-black fs-poppins fs-200 bold-700" th:text="|${comments.size} review ${product.name}|">
+            </p>
+        </div>
+        <div id="post-reviews">
+            <div
+                    id="display-reviews"
+                    class="display-reviews bg-very-light-gray flex"
+                    th:each="comment : ${comments}"
+            >
+                <div>
+                    <i class="uil text-black uil-user-circle"></i>
+                </div>
+                <div>
+                    <div class="connent-box">
+                        <i th:class="|uil uil-star ${index <= comment.getRating() ? 'text-red' : ''}|"
+                           th:each="index : ${#numbers.sequence(1, 5)}"></i>
+                        <p class="fs-poppins fs-200">
+                            <span class="bold-700">[[${comment.commentUser != null ? comment.commentUser.fullName : 'Anomyous' }]] </span>
+                            -
+                            [[${comment.commentDate}]]
+                        </p>
+                        <p class="fs-poppins fs-200">[[${comment.content}]]</p>
+                    </div>
+                    <!--              <div class="flex likes-icon">-->
+                    <!--                <i class="uil bg-gray uil-thumbs-up"></i>-->
+                    <!--                <i class="uil bg-gray uil-thumbs-down"></i>-->
+                    <!--                <span id="count-like" class="bg-white fs-poppins">0</span>-->
+                    <!--              </div>-->
+                </div>
+            </div>
+        </div>
+
+        <div class="grid" th:if="${canRating}">
+            <div class="reviews">
+                <p class="text-black fs-poppins fs-200">Add a review</p>
+            </div>
+
+            <div class="give-reviews flex">
+                <div>
+                    <p class="text-black fs-poppins fs-200 bold-700">Your rating *</p>
+                </div>
+                <div>
+                    <i class="user-rating uil uil-star"></i>
+                    <i class="user-rating uil uil-star"></i>
+                    <i class="user-rating uil uil-star"></i>
+                    <i class="user-rating uil uil-star"></i>
+                    <i class="user-rating uil uil-star"></i>
+                    <script>
+                        var rating = document.querySelectorAll('.user-rating');
+                        for (var i = 0; i < rating.length; i++) {
+                            rating[i].addEventListener('click', function () {
+                                var index = Array.prototype.indexOf.call(rating, this);
+                                for (var j = 0; j < rating.length; j++) {
+                                    if (j <= index) {
+                                        rating[j].classList.add('text-red');
+                                    } else {
+                                        rating[j].classList.remove('text-red');
+                                    }
+                                }
+                            });
+                        }
+                        ;
+                    </script>
+                </div>
+            </div>
+            <div class="message grid">
+                <p class="fs-montserrat">Your review</p>
+                <textarea
+                        id="comment-content"
+                        type="text"
+                        rows="10"
+                        class="bg-very-light-gray fs-montserrat"
+                ></textarea>
+                <p id="comment-errors" style="margin: 5px 0; padding: 5px; color: red"></p>
+            </div>
+        </div>
+        <div class="review-btn flex" th:if="${canRating}">
+            <button
+                    id="add-connent"
+                    class="large-btn bg-red text-white fs-poppins fs-50"
+                    th:data-id="${product.id}"
+            >
+                Submit
+            </button>
+            <script>
+                $(document).ready(function () {
+                    $("#add-connent").click(function (e) {
+                        const commentContent = $("#comment-content").val();
+                        const rating = document.querySelectorAll('.user-rating.text-red').length;
+
+                        if (rating > 0 && commentContent.length > 0) {
+                            $('#comment-errors').text('');
+                            $.ajax({
+                                url: "/api/comment",
+                                type: "POST",
+                                contentType: "application/json",
+                                data: JSON.stringify({
+                                    'content': commentContent,
+                                    'productId': e.target.dataset.id,
+                                    'rating': rating
+                                }),
+                                success: function (data) {
+                                    document.getElementById("comment-errors").innerHTML = data.message;
+                                    if (data.result === 'success') {
+                                        e.target.remove();
+                                        let rateTag = '';
+                                        for (let i = 0; i < data.rating; i++) {
+                                            rateTag += `<i class="uil uil-star ${i < rating ? 'text-red' : ''}"></i>`;
+                                        }
+                                        $('#post-reviews').append($(`
+                                            <div
+                                                id="display-reviews"
+                                                class="display-reviews bg-very-light-gray flex">
+                                            <div>
+                                                <i class="uil text-black uil-user-circle"></i>
+                                            </div>
+                                            <div>
+                                                <div class="connent-box">
+                                                   ${rateTag}
+                                                    <p class="fs-poppins fs-200">
+                                                        <span class="bold-700">${data.data.commentUser != null ? data.data.commentUser.fullName : 'Anomyous'}</span> -
+                                                        ${data.data.commentDate}
+                                                    </p>
+                                                    <p class="fs-poppins fs-200">${data.data.content}</p>
+                                                </div>
+                                            </div>
+                                        </div>`));
+                                    }
+                                },
+                                error: function (data) {
+                                    document.getElementById("comment-errors").innerHTML = "Error occurred when add comment, please try later!";
+                                }
+                            });
+                        } else {
+                            document.getElementById("comment-errors").innerHTML = "Please rate and write your comment!";
+                        }
+                    });
+                })
+            </script>
+        </div>
+    </article>
+</section>
+
+<!-- ==============Product Description====================== -->
+
+<!-- ============Related Product Section===================== -->
+
+<!-- =================Related Product Section ================================ -->
+<section class="best-product container">
+    <h2 class="letter-spacing bold-800 fs-poppins">Related products</h2>
+</section>
+
+<!-- ============Related Product Section===================== -->
+
+<!-- ===========================Heading======================== -->
+<section class="best-Seller related-product" style="grid-template-columns: 24% 24% 24% 24%">
+    <div class="product grid" th:each="p : ${relatedProducts}"
+         style="border: 1px solid gainsboro; padding: 10px; border-radius: 5px">
+        <img th:src="${p.image}" th:alt="${p.image}"/>
+        <p class="fs-poppins bold-500" th:text="${p.name}">White EliteBook Tablet 810</p>
+        <p class="fs-poppins bold-500">$[[${p.price}]]</p>
+
+        <!-- ---------------------------- -->
+        <div class="product-details grid bg-red">
+            <i class="text-white uil uil-shopping-cart-alt" th:onclick="addCart([[${p.id}]], 1)"></i>
+            <i class="text-white uil uil-heart-alt"></i>
+        </div>
+        <!-- ===================================== -->
+    </div>
+
+</section>
+
+<!-- ==============Footer section================================= -->
+
+<footer th:replace="~{/component/site :: footer}"/>
+</body>
+</html>

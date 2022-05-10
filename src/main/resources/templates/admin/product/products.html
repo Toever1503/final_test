@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/component/site :: head}"/>
+<body>
+<header th:replace="~{/component/admin :: header}"/>
+<!-- The Modal add product -->
+<div class="modal fade" id="addProduct">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add New</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form class="p-2" id="product-form">
+                <input type="text" class="d-none" name="id">
+                <div class="mb-3 mt-3">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" placeholder="Enter name for product"
+                           name="name">
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="desc">Description:</label>
+                    <input type="text" class="form-control" id="desc" placeholder="Enter description for product"
+                           name="description">
+                </div>
+
+                <div class="mb-3 mt-3">
+                    <label for="price">Price:</label>
+                    <input type="number" step="0.1" class="form-control" id="price"
+                           placeholder="Enter price for product"
+                           name="price">
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="price">Category:</label>
+                    <select class="form-select" name="category">
+                        <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"/>
+                    </select>
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="file">Image:</label> <br>
+                    <input type="text" class="d-none" name="image">
+                    <img src="" alt="" style="width: 50px; height: 50px;" class="img-fluid">
+                    <input type="file" accept="image/*" name="file" id="file">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="btn-action">Create</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+            <script>
+                $('#product-form').submit(e => {
+                    e.preventDefault();
+                    let form = new FormData(e.target);
+                    console.log(e.target.action)
+                    $.ajax({
+                        url: e.target.action,
+                        method: 'POST',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        // headers: {
+                        //   'Content-Type': 'multipart/form-data'
+                        // },
+                        success: function (data) {
+                            console.log(data);
+                            alert(data.message);
+                            if (data.result == 'SUCCESS') {
+                                if(form.get('id') == ''){
+                                    const product = data.data;
+                                    $(`
+                                        <tr id="product-${product.id}">
+                                                <td>
+                                                    <img style="height: 50px; width: 50px" src="${product.image}">
+                                                </td>
+                                                <td >${product.name}</td>
+                                                <td >$${product.price}</td>
+                                                <td >${product.description}</td>
+                                                <td >${product.category.name}</td>
+                                                <td>
+                                                    <button class="btn btn-outline-primary" onclick="editProduct(${product})">Edit</button>
+                                                    <button class="btn btn-outline-danger" data-id="${product.id}"
+                                                            onclick="deleteProduct(this, this.getAttribute('data-id'))">Delete
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                    `).insertAfter('#keep-product');
+                                }
+                                else{
+                                    updateRow(data.data);
+                                }
+                                resetProductModal();
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                });
+
+                function resetProductModal() {
+                    const form = $('#product-form');
+                    $('#product-form')[0].action = '/api/product';
+                    form.find('img').attr('src', '');
+                    form.find('input[name="id"]').val('');
+                    form.find('input[name="name"]').val('');
+                    form.find('input[name="description"]').val('');
+                    form.find('input[name="price"]').val(0);
+                    form.find('input[name="image"]').val('');
+                    form.find('input[type="file"]').val(null);
+                    form.find('select[name="category"]').val(1);
+                    form.find('#btn-action').text('Create');
+                }
+
+                function editProduct(product) {
+                    console.log(product)
+                    resetProductModal();
+                    const form = $('#product-form');
+                    form[0].action = '/api/product/' + product.id;
+                    form.find('img').attr('src', product.image);
+                    form.find('input[name="id"]').val(product.id);
+                    form.find('input[name="name"]').val(product.name);
+                    form.find('input[name="description"]').val(product.description);
+                    form.find('input[name="price"]').val(product.price);
+                    form.find('input[name="image"]').val(product.image);
+                    form.find('input[type="file"]').val(null);
+                    form.find('select[name="category"]').val(product.category.id);
+                    form.find('#btn-action').text('Update');
+                    $('#addProduct').modal('show');
+                }
+
+                function deleteProduct(e, id) {
+                    console.log('delete_product: ' + id);
+                    confirm('Are you sure you want to delete this product?') && $.ajax({
+                        url: '/api/product/' + id,
+                        method: 'DELETE',
+                        success: function (data) {
+                            if (data.result == 'SUCCESS') {
+                                e.parentElement.parentElement.remove();
+                            }
+                            console.log(data);
+                            alert(data.message);
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+
+                function updateRow(product) {
+                    console.log('update row + ' + product);
+                    const trTag = $('#product-' + product.id + ' td');
+                    $(trTag[0]).find('img').attr('src', product.image);
+                    $(trTag[1]).text(product.name);
+                    $(trTag[2]).text(product.price + "$");
+                    $(trTag[3]).text(product.description);
+                    $(trTag[4]).text(product.category.name);
+                    $(trTag[5]).find('button')[0].onclick = function () {
+                        editProduct(product);
+                    };
+                }
+
+                $(document).ready(() => {
+                    $('#open-product-modal').click(() => {
+                        resetProductModal();
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</div>
+<div class="main-content container mt-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item " aria-current="page"><a href="/admin">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Products</li>
+        </ol>
+    </nav>
+
+    <button class="btn btn-outline-primary p-1 mb-2" type="button" id="open-product-modal" data-bs-toggle="modal"
+            data-bs-target="#addProduct">Add new
+    </button>
+    <table class="table table-hover table-bordered text-center">
+        <caption th:if="${products.getTotalElements() == 0}" class="text-center">Empty</caption>
+        <thead>
+        <tr>
+            <th></th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr id="keep-product"></tr>
+        <tr th:each="product : ${products.getContent()}" th:id="|product-${product.id}|">
+            <td>
+                <img style="height: 50px; width: 50px" th:src="${product.image}">
+            </td>
+            <td th:text="${product.name}"></td>
+            <td th:text="|${product.price}$|"></td>
+            <td th:text="${product.description}"></td>
+            <td th:text="${product.category.name}"></td>
+            <td>
+                <button class="btn btn-outline-primary" th:onclick="editProduct([[${product}]])">Edit</button>
+                <button class="btn btn-outline-danger" th:data-id="${product.id}"
+                        onclick="deleteProduct(this, this.getAttribute('data-id'))">Delete
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <ul class="pagination mt-2">
+        <li class="page-item" th:if="${!products.isFirst()}"><a class="page-link"
+                                                                th:href="${'?page='+ (products.getNumber()-1)}">Previous</a>
+        </li>
+        <li th:class="|page-item ${pageIndex == products.getNumber() ? 'active' : ''}|"
+            th:each="pageIndex : ${#numbers.sequence( 0, __${products.getTotalPages()-1}__)}"><a
+                class="page-link" th:href="|?page=${pageIndex}|" th:text="${pageIndex+1}"></a></li>
+        <li class="page-item" th:if="${!products.isLast()}"><a class="page-link"
+                                                               th:href="${'?page='+(products.getNumber()+1)}">Next</a>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

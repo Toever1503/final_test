@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <title th:text="${page_title}"/>
+
+    <!-- Latest compiled and minified CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+</head>
+<body>
+<header class="primary-header container flex" th:fragment="header">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <div class="header-inner-one flex">
+        <div class="logo">
+            <img src="/images/logo.png" alt=""/>
+        </div>
+        <button
+                class="mobile-close-btn"
+                data-visible="false"
+                aria-controls="primary-navigation"
+        >
+            <i class="uil uil-times-circle"></i>
+        </button>
+        <nav>
+            <ul
+                    id="primary-navigation"
+                    data-visible="false"
+                    class="primary-navigation flex"
+            >
+                <li>
+                    <a class="active fs-100 fs-montserrat bold-500" href="/"
+                    >Home</a
+                    >
+                </li>
+                <li>
+                    <a class="fs-100 fs-montserrat bold-500" href="/shop"
+                    >Shop</a
+                    >
+                </li>
+                <li>
+                    <a class="fs-100 fs-montserrat bold-500" href="/about"
+                    >About Us</a
+                    >
+                </li>
+                <li>
+                    <a class="fs-100 fs-montserrat bold-500" href="/blog"
+                    >Blog</a
+                    >
+                </li>
+                <li>
+                    <a class="fs-100 fs-montserrat bold-500" href="/contact-us"
+                    >Contact Us</a
+                    >
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="header-login flex">
+        <a sec:authorize="!isAuthenticated()" href="/login" class="fs-100 fs-montserrat bold-500">login</a>
+        <a sec:authorize="isAuthenticated()" href="/logout" class="fs-100 fs-montserrat bold-500">Logout</a>
+
+        <i class="uil uil-search"></i>
+        <i
+                id="cart-boxaa"
+                aria-controls="cart-icon"
+                class="uil uil-shopping-bag"
+                onclick="window.location.href='/user-cart'"
+        ></i>
+        <script>
+            $(document).ready(function () {
+                // $("#cart-box").click(function () {
+                //     $("#cart-icon").toggle();
+                // });
+            });
+
+            function addCart(id, quantity = 1) {
+                console.log(id);
+                console.log(quantity);
+                $.ajax({
+                    url: '/user-cart/add/' + id + '?quantity=' + quantity,
+                    type: 'GET',
+                    success: function (data) {
+                        console.log(data);
+                        alert(data.message);
+                    },
+                    error: function (data) {
+                        alert("Error occurred!");
+                    }
+                });
+            }
+            function removeProductFromCart(e, id) {
+                console.log('remove cart: ' + id);
+                $.ajax({
+                    url: '/user-cart/delete/' + id,
+                    type: 'GET',
+                    success: function (data) {
+                        console.log(data);
+                        alert(data.message);
+                        if(data.result == 'SUCCESS')
+                            e.remove();
+                    },
+                    error: function (data) {
+                        alert("Error occurred! Page will be reloaded.");
+                        location.reload();
+                    }
+                });
+            }
+        </script>
+
+        <!-- =================1111111111================== -->
+        <div id="cart-icon" data-visible="false" class="cart-icon">
+            <div class="shopping flex">
+                <p>Shopping Basket</p>
+                <i id="cross-btn" class="uil uil-times"></i>
+            </div>
+            <div class="cart bold-800 flex">
+                <i class="uil uil-shopping-cart-alt"></i>
+                <p>Cart Is Empty</p>
+
+                <!-- ================================================== -->
+
+                <!-- ================================================== -->
+            </div>
+        </div>
+    </div>
+    <div class="mobile-open-btn"><i class="uil uil-align-right"></i></div>
+</header>
+
+<!-- =====================Footer Section================ -->
+
+<footer th:fragment="footer">
+
+    <!-- =============Brands================= -->
+    <section class="brands grid">
+        <div>
+            <img src="/images/br-1.png" alt="">
+        </div>
+        <div>
+            <img src="/images/br-2.png" alt="">
+        </div>
+        <div>
+            <img src="/images/br-3.png" alt="">
+        </div>
+        <div>
+            <img src="/images/br-4.png" alt="">
+        </div>
+        <div>
+            <img src="/images/br-5.png" alt="">
+        </div>
+    </section>
+
+    <!-- =============Footer Menu=================== -->
+    <section class="footer grid">
+        <div class="footer-logo grid">
+            <img src="/images/logo.png" alt="">
+            <p class="fs-montserrat fs-200">There are many variations passages of Lorem Ipsum available, but the
+                majority have</p>
+            <div class="social-media flex">
+                <i class="uil uil-facebook-f"></i>
+                <i class="uil uil-instagram"></i>
+                <i class="uil uil-linkedin"></i>
+                <i class="uil uil-twitter"></i>
+            </div>
+        </div>
+
+        <div class="footer-menu grid">
+            <h3 class="fs-poppins fs-200 bold-800">Quick Links</h3>
+            <ul>
+                <li><a class="fs-montserrat text-black fs-200" href="/static/css/#">Home</a></li>
+                <li><a class="fs-montserrat text-black fs-200" href="/static/css/#">About</a></li>
+                <li><a class="fs-montserrat text-black fs-200" href="/static/css/#">Shop</a></li>
+                <li><a class="fs-montserrat text-black fs-200" href="/static/css/#">Contact</a></li>
+            </ul>
+        </div>
+
+        <div class="contact grid">
+
+            <h3 class="fs-poppins fs-200 bold-800">Contact</h3>
+            <p class="fs-montserrat">+99 (0) 101 0000 888 Patricia C. Amedee 4401 Waldeck Street Grapevine Nashville, Tx
+                76051</p>
+        </div>
+
+        <div class="emails grid">
+            <h3 class="fs-poppins fs-200 bold-800">Subscribe To Our Email</h3>
+            <p class="updates fs-poppins fs-300 bold-800">For Latest News & Updates</p>
+            <div class="inputField flex bg-gray">
+                <input type="email" placeholder="Enter Your Email" class="fs-montserrat bg-gray">
+                <button class="bg-red text-white fs-poppins fs-50">Subscribe</button>
+            </div>
+        </div>
+    </section>
+
+    <section class="copyRight">
+        <p class="c-font fs-montserrat fs-200">© 2022 eStore. All rights reserved.</p>
+        <p class="fs-montserrat fs-100 text-align p-top">Privacy Policy . Term Condition</p>
+    </section>
+
+</footer>
+</body>
+</html>

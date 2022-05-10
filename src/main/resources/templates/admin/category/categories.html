@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/component/site :: head}"/>
+<body>
+<header th:replace="~{/component/admin :: header}"/>
+<!-- The Modal add category(resuse from product) -->
+<div class="modal fade" id="addProduct">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add New</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form class="p-2" id="product-form">
+                <input type="text" class="d-none" name="id">
+                <div class="mb-3 mt-3">
+                    <label for="name">Name:</label>
+                    <input type="text" class="form-control" id="name" placeholder="Enter name for category"
+                           name="name">
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="slug">Slug:</label>
+                    <input type="text" class="form-control" id="slug" placeholder="Enter slug for category"
+                           name="slug">
+                </div>
+
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="btn-action">Create</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+            <script>
+                $('#product-form').submit(e => {
+                    e.preventDefault();
+                    let form = new FormData(e.target);
+                    console.log(e.target.action)
+                    $.ajax({
+                        url: e.target.action,
+                        method: 'POST',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            console.log(data);
+                            alert(data.message);
+                            if (data.result == 'SUCCESS') {
+                                resetCategoryModal();
+                                if (form.get("id") == '') {
+                                    $(`
+                                        <tr id="category-${data.data.id}">
+                                            <td>#${data.data.id}</td>
+                                            <td>${data.data.name}</td>
+                                            <td>#${data.data.slug}</td>
+                                            <td>
+                                                    <button class="btn btn-outline-primary" onclick="editCategory(${data.data})">Edit</button>
+                                                    <button class="btn btn-outline-danger" data-id="${data.data.id}"
+                                                                    onclick="deleteCategory(this, this.getAttribute('data-id'))">Delete
+                                                    </button>
+                                            </td>
+                                        </tr>
+                                    `).insertAfter('#keep-category');
+                                } else
+                                    updateRow(data.data);
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                });
+
+                function resetCategoryModal() {
+                    const form = $('#product-form');
+                    $('#product-form')[0].action = '/api/category';
+                    form.find('img').attr('src', '');
+                    form.find('input[name="id"]').val('');
+                    form.find('input[name="name"]').val('');
+                    form.find('input[name="slug"]').val('');
+                    form.find('#btn-action').text('Create');
+                }
+
+                function editCategory(cat) {
+                    console.log(cat)
+                    resetCategoryModal();
+                    const form = $('#product-form');
+                    form[0].action = '/api/category/' + cat.id;
+                    form.find('input[name="id"]').val(cat.id);
+                    form.find('input[name="name"]').val(cat.name);
+                    form.find('input[name="slug"]').val(cat.slug);
+                    form.find('#btn-action').text('Update');
+                    $('#addProduct').modal('show');
+                }
+
+                function deleteCategory(e, id) {
+                    console.log('delete_category: ' + id);
+                    confirm('Are you sure you want to delete this category?') && $.ajax({
+                        url: '/api/category/' + id,
+                        method: 'DELETE',
+                        success: function (data) {
+                            if (data.result == 'SUCCESS') {
+                                e.parentElement.parentElement.remove();
+                            }
+                            console.log(data);
+                            alert(data.message);
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+
+                function updateRow(cat) {
+                    console.log('update row + ' + cat);
+                    const trTag = $('#category-' + cat.id + ' td');
+                    $(trTag[0]).text('#'+cat.id);
+                    $(trTag[1]).text(cat.name);
+                    $(trTag[2]).text(cat.slug);
+                    $(trTag[3]).find('button')[0].onclick = function () {
+                        editCategory(cat);
+                    };
+                }
+
+                $(document).ready(() => {
+                    $('#open-product-modal').click(() => {
+                        resetCategoryModal();
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</div>
+<div class="main-content container mt-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item " aria-current="page"><a href="/admin">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Categories</li>
+        </ol>
+    </nav>
+
+    <button class="btn btn-outline-primary p-1 mb-2" type="button" id="open-product-modal" data-bs-toggle="modal"
+            data-bs-target="#addProduct">Add new
+    </button>
+    <table class="table table-hover table-bordered text-center">
+        <caption th:if="${categories.getTotalElements() == 0}" class="text-center">Empty</caption>
+        <thead>
+        <tr>
+            <th>Category ID</th>
+            <th>Name</th>
+            <th>Slug</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr id="keep-category"></tr>
+        <tr th:each="cat : ${categories.getContent()}" th:id="|category-${cat.id}|">
+            <td th:text="|#${cat.id}|"></td>
+            <td th:text="${cat.name}"></td>
+            <td th:text="${cat.slug}"></td>
+            <td>
+                <button class="btn btn-outline-primary" th:onclick="editCategory([[${cat}]])">Edit</button>
+                <button class="btn btn-outline-danger" th:data-id="${cat.id}"
+                        onclick="deleteCategory(this, this.getAttribute('data-id'))">Delete
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <ul class="pagination mt-2">
+        <li class="page-item" th:if="${!categories.isFirst()}"><a class="page-link"
+                                                                  th:href="${'?page='+ (categories.getNumber()-1)}">Previous</a>
+        </li>
+        <li th:class="|page-item ${pageIndex == categories.getNumber() ? 'active' : ''}|"
+            th:each="pageIndex : ${#numbers.sequence( 0, __${categories.getTotalPages()-1}__)}"><a
+                class="page-link" th:href="|?page=${pageIndex}|" th:text="${pageIndex+1}"></a></li>
+        <li class="page-item" th:if="${!categories.isLast()}"><a class="page-link"
+                                                                 th:href="${'?page='+(categories.getNumber()+1)}">Next</a>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

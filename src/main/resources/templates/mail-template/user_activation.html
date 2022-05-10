@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Active account</title>
+</head>
+<body>
+    <h1><center>Active account</center></h1>
+    <p>
+        Hello, <span th:text="${username}"/>
+    </p>
+    <p>
+        Please click the link below to active your account.  <br/>
+        <a th:href="${active_link}">Active now</a>
+        <br/>
+        <span th:text="${active_link}"/>
+    </p>
+</body>
+</html>

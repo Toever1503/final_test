@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <!-- Google Fonts -->
+    <link
+            href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+            rel="stylesheet"
+    />
+
+    <!-- Icon -->
+    <link
+            rel="stylesheet"
+            href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
+    <!-- icon -->
+
+    <!-- Google fonts End -->
+
+    <!-- custon style Sheet & JavaScript -->
+    <link rel="stylesheet" href="/static/css/shop.css"/>
+    <link rel="stylesheet" href="/static/css/index.css"/>
+    <script src="/static/js/index.js" defer></script>
+    <script src="/static/js/shop.js" defer></script>
+    <!-- custon style Sheet & JavaScript -->
+    <title>Ecommerce Website</title>
+</head>
+<body class="home">
+<header th:replace="~{/component/site :: header}"/>
+
+
+<!-- ===================Shop Feature Section============================ -->
+
+<section class="shop-feature bg-gray grid">
+    <div>
+        <p class="fs-montserrat text-black">
+            Home <span aria-hidden="true" class="margin">></span> Product
+        </p>
+    </div>
+    <h2 class="fs-poppins fs-300 bold-700">Product</h2>
+</section>
+
+<!-- ===================Section 2---------------------- -->
+
+
+<main class="shop-main-container grid">
+    <!-- -------------------Inner Section=============== -->
+
+    <div>
+        <div class="shop-title flex">
+            <div>
+                <h2 class="fs-poppins fs-300">Shop</h2>
+                <!--                <p class="fs-montserrat">Showing 1-9 of 10 results</p>-->
+            </div>
+            <div>
+                <select name="text" id="" class="fs-poppins bg-black text-white">
+                    <option value="">Default Sorting</option>
+                    <option value="">Short By Average rating</option>
+                    <option value="">Short By latest</option>
+                    <option value="">Short By price: Low To High</option>
+                    <option value="">Short By price: High To Low</option>
+                </select>
+            </div>
+        </div>
+        <!-- ---------------End----Inner Section=============== -->
+
+        <p id="list-product-message" th:style="|padding: 5px; margin: 5px; text-align: center; ${products.hasContent()==true ? 'display: none': ''}|"><b>No products found!</b></p>
+        <!-- ==============Shop-product====================== -->
+
+        <section class="shop-product grid" style="grid-template-columns: 24% 24% 24% 24%; gap: 10px !important;">
+            <div class="product-list grid" th:each="product : ${products}" style="border: 1px solid gainsboro;">
+                <a th:href="|/product/${product.name}/${product.id}|">
+                    <img th:src="${product.image}" th:alt="${product.name}" style="max-height: 248px"/>
+                    <p class="fs-montserrat bold-600" style="padding: 5px" th:text="${product.name}"></p>
+                </a>
+                <div class="shop-btn flex" style="padding: 5px">
+                    <button class="bg-red text-white fs-montserrat"><a th:onClick="addCart([[${product.id}]], 1)">Add To
+                        Cart</a>
+                    </button>
+                    <p class="fs-montserrat bold-700" th:text="|$ ${product.price}|"></p>
+                </div>
+
+                <!-- ===============Pop-Up========================== -->
+
+                <div class="pup-up">
+                    <p class="fs-poppins">Sell</p>
+                </div>
+                <!-- ===============Pop-Up========================== -->
+            </div>
+        </section>
+
+        <div class="next-page fs-poppins flex ">
+            <span class="change-page" th:data-page="${products.getNumber()}"  th:if="${!products.isFirst()}"><i class="uil text-red uil-angle-double-left"></i></span>
+            <span th:class="|change-page bold-800 ${pageIndex == products.getNumber() ? 'bg-red text-white active' : 'text-black'}|"
+                  th:data-page="${pageIndex+1}"
+                  th:each="pageIndex : ${#numbers.sequence( 0, __${products.getTotalPages()-1}__)}"
+                  th:text="${pageIndex+1}">1</span>
+            <span class="change-page" th:data-page="${products.getNumber()+2}"  th:if="${!products.isLast()}"><i class="uil text-red uil-angle-double-right"></i></span>
+        </div>
+    </div>
+    <!-- ==============Shop-product====================== -->
+    <section>
+        <div class="sidebar-search text-black bg-gray flex">
+            <form action="/search">
+                <input
+                        type="text"
+                        placeholder="Search Here"
+                        class="fs-montserrat bg-gray"
+                        name="q"
+                />
+                <button style="border: none">
+                    <i class="uil bg-red text-white uil-search"></i>
+                </button>
+            </form>
+        </div>
+
+        <aside class="sidebar-category">
+            <div class="category-list flex">
+                <h3 class=" fs-poppins bold-700 fs-200">Product Categories</h3>
+                <i id="arrow" class="uil uil-angle-right" data-category="false"></i>
+            </div>
+
+            <div class="shop-category-list">
+                <ul id="side-nav" class="sidebar-nav grid" data-category="false">
+                    <li class="cart-item" th:each="cat: ${siteCategories}">
+                        <a class="fs-montserrat text-black bold-500 active" th:data-id="${cat.id}"
+                           th:text="${cat.name}"/>
+                    </li>
+                </ul>
+                <style>
+                    #side-nav .cart-item:hover a {
+                        cursor: pointer;
+                        color: chocolate;
+                    }
+                </style>
+                <script>
+                    var main_category = 1;
+                    $(document).ready(function () {
+                        document.querySelectorAll(".cart-item").forEach(item => {
+                            item.addEventListener("click", function (e) {
+                                main_category = e.target.dataset.id;
+                                $(".cart-item a").css({
+                                    "color": "black"
+                                });
+                                $(e.target).find('a').css({
+                                    "color": "chocolate"
+                                });
+                                changeCategory();
+                            });
+                        });
+                    });
+
+                    function changeCategory(page = 1) {
+                        console.log("main_category", main_category);
+                        $.ajax({
+                            url: '/api/product/category/' + main_category + '?page=' + (page - 1),
+                            type: 'GET',
+                            success: function (data) {
+                                $('.shop-product.grid>div').remove();
+                                $('.next-page>span').remove();
+                                if (data.data.empty == true) {
+                                    $('#list-product-message').css({
+                                        "display": "block"});
+                                } else {
+                                    $('#list-product-message').css({
+                                        "display": "none"});
+                                    console.log(data.data);
+                                    data.data.content.forEach(product => {
+                                        $(`
+                                       <div class="product-list grid" style="border: 1px solid gainsboro;">
+                                            <a href="/product/${product.name}/${product.id}">
+                                                <img src="${product.image}" alt="${product.name}" style="max-height: 248px"/>
+                                                <p class="fs-montserrat bold-600" style="padding: 5px">${product.name}</p>
+                                            </a>
+                                            <div class="shop-btn flex" style="padding: 5px">
+                                                <button class="bg-red text-white fs-montserrat"><a th:onClick="addCart(${product.id}, 1)">Add To
+                                                    Cart</a>
+                                                </button>
+                                                <p class="fs-montserrat bold-700">$ ${product.price}</p>
+                                            </div>
+
+                                            <!-- ===============Pop-Up========================== -->
+
+                                            <div class="pup-up">
+                                                <p class="fs-poppins">Sell</p>
+                                            </div>
+                                            <!-- ===============Pop-Up========================== -->
+                                        </div>
+                                       `).hide().appendTo('.shop-product.grid').show(0.5);
+                                    });
+
+                                    // pageination
+                                    if(!data.data.first== true)
+                                        $(`<span class="change-page"><i data-page="${data.data.number}"
+                                            className="uil text-red uil-angle-double-left"></i></span>`).appendTo('.next-page');
+                                    for(let i = 0; i < data.data.totalPages; i++){
+                                        $(` <span
+                                            class="change-page bold-800 ${i == data.data.number ? 'bg-red text-white active' : 'text-black'}"
+                                            data-page="${i+1}" >${i+1}</span>`)
+                                            .appendTo('.next-page');
+                                    };
+                                    if(!data.data.last == true)
+                                        $(`<span class="change-page"><i data-page="${data.data.number+2}"
+                                            className="uil text-red uil-angle-double-right"></i></span>`).appendTo('.next-page');
+                                    addPageEvent();
+                                };
+                            },
+                            error: function (data) {
+                                alert('Error occurred, page will be reloaded');
+                                window.location.reload();
+                            }
+                        });
+                    }
+
+                    function addPageEvent(){
+                        document.querySelectorAll('.change-page').forEach(item=>{
+                            item.addEventListener('click', function(e){
+                                let page = this.getAttribute('data-page');
+                                console.log("change-page");
+                                changeCategory(page);
+                            });
+                        });
+                    };
+                    addPageEvent();
+                </script>
+            </div>
+        </aside>
+    </section>
+</main>
+
+
+<!-- =====================Footer Section================ -->
+
+<footer th:replace="~{/component/site :: footer}"/>
+</body>
+</html>

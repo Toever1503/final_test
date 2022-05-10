@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100;200;300;400;500;600;700;800;900&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Icon -->
+    <link
+      rel="stylesheet"
+      href="https://unicons.iconscout.com/release/v4.0.0/css/line.css"
+    />
+    <!-- icon -->
+
+    <!-- Google fonts End -->
+
+    <!-- custon style Sheet & JavaScript -->
+    <link rel="stylesheet" href="/static/css/index.css" />
+    <link rel="stylesheet" href="/static/css/shop.css" />
+    <link rel="stylesheet" href="/static/css/blog.css" />
+    <link rel="stylesheet" href="/static/css//contactus.css" />
+    <script src="/static/js/index.js" defer></script>
+    <!-- custon style Sheet & JavaScript -->
+    <title>Ecommerce Website</title>
+  </head>
+  <body class="home">
+  <header th:replace="~{/component/site :: header}"/>
+
+    <!-- ===================Shop Feature Section============================ -->
+
+    <section class="shop-feature bg-gray grid">
+      <div>
+        <p class="fs-montserrat text-black">
+          Home <span aria-hidden="true" class="margin">></span> Contact Us
+        </p>
+      </div>
+      <h2 class="fs-poppins fs-300 bold-700">Contact Us</h2>
+    </section>
+
+    <!-- ===================Contact Us======================== -->
+
+    <section class="contact-us grid">
+      <div class="contact-info">
+        <div>
+          <h1 class="fs-poppins text-red fs-200">Contact Us</h1>
+          <h3 class="fs-poppins text-black fs-400">Get In ouch</h3>
+          <p class="fs-montserrat fs-100">
+            When, while lovely valley teems with vapour around meand meridian
+            the upper impenetrable .
+          </p>
+        </div>
+        <form action="#" class="contact-form grid">
+          <div class="grid">
+            <input
+              class="bg-gray text-black fs-poppins"
+              type="text"
+              placeholder="Your E-mail"
+            />
+          </div>
+          <div class="grid">
+            <input
+              class="bg-gray text-black fs-poppins"
+              type="text"
+              placeholder="Phone number"
+            />
+          </div>
+          <div>
+            <textarea
+              class="bg-gray text-black fs-poppins"
+              rows="10"
+              placeholder="Your Message Here"
+            >
+            </textarea>
+          </div>
+
+          <div class="contact-btn">
+            <button class="large-btn bg-red text-white fs-poppins fs-50">
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ================map===================== -->
+      <div>
+        <div class="map">
+          <h4 class="fs-poppins fs-200 text-red">
+            Google Maps API Key Is Messing
+          </h4>
+          <p class="fs-montserrat fs-100">
+            In order to use google maps on your website, you have to create an
+            api key and insert it in customizer "Google Maps API Key" field.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===========Support Section==================== -->
+
+    <section class="suport-container grid">
+      <div class="support-info grid">
+        <div class="suport-img grid">
+          <img src="/images/sup-1.svg" alt="" />
+        </div>
+        <div>
+          <p class="fs-100">
+            <span class="fs-200 fs-poppins bold-700">Email:</span
+            > info@yourdomain.com
+          </p>
+          <p class="fs-poppins fs-100">info@samplemail.com</p>
+        </div>
+      </div>
+      <div class="support-info grid">
+        <div class="suport-img grid">
+          <img src="/images/sup-2.svg" alt="" />
+        </div>
+        <div>
+          <p class="fs-100">
+            <span class="fs-200 fs-poppins bold-700">Phone:</span
+            > +99 (0) 101 0000 888
+          </p>
+          <p class="fs-poppins fs-100">+99 (0) 101 0000 888</p>
+        </div>
+      </div>
+      <div class="support-info grid">
+        <div class="suport-img grid">
+          <img src="/images/sup-3.svg" alt="" />
+        </div>
+        <div>
+          <p class="fs-100">
+            <span class="fs-200 fs-poppins bold-700">Address:</span
+            > Patricia C. 4401 Waldeck
+          </p>
+          <p class="fs-poppins fs-100">Street Grapevine Nashville, Tx 76051</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================Contact Us======================== -->
+
+  <footer th:replace="~{/component/site :: footer}"/>
+  </body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/component/site :: head}"/>
+<body>
+<header th:replace="~{/component/admin :: header}"/>
+<!-- The Modal add user (reuse from product) -->
+<div class="modal fade" id="addProduct">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add New</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <form class="p-2" id="product-form">
+                <input type="text" class="d-none" name="id">
+                <div class="mb-3 mt-3">
+                    <label for="fullName">Name:</label>
+                    <input type="text" class="form-control" id="fullName" placeholder="Enter your name"
+                           name="fullName">
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="username">Username:</label>
+                    <input type="text" class="form-control" id="username" placeholder="Enter username"
+                           name="username">
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="email">Email:</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter email"
+                           name="email">
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="password">Password:</label>
+                    <input type="text" class="form-control" id="password" placeholder="Enter password"
+                           name="password">
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="password">Authorities:</label>
+                    <select class="form-select" multiple name="authorities">
+                        <option th:each="auth : ${authorities}" th:value="${auth.id}" th:text="${auth.authorityName}"/>
+                    </select>
+                </div>
+                <div class="mb-3 mt-3">
+                    <label for="file">Image:</label> <br>
+                    <input type="text" class="d-none" name="imageProfile">
+                    <img src="" alt="" style="width: 50px; height: 50px;" class="img-fluid">
+                    <input type="file" accept="image/*" name="file" id="file">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" id="btn-action">Create</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                </div>
+            </form>
+            <script>
+                $('#product-form').submit(e => {
+                    e.preventDefault();
+                    let form = new FormData(e.target);
+                    console.log(e.target.action)
+                    $.ajax({
+                        url: e.target.action,
+                        method: 'POST',
+                        data: form,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            console.log(data);
+                            alert(data.message);
+                            if (data.result == 'SUCCESS') {
+                                resetProductModal();
+                                const user = data.data;
+                                if (form.get('id') == '') {
+                                    const authTag = user.authorities.map(auth=> (`<span>${auth.authorityName} - </span>`));
+                                    $(`
+                                        <tr id="user-${user.id}">
+                                            <td>
+                                                <img style="height: 50px; width: 50px" src="${user.imageProfile}">
+                                            </td>
+                                            <td >${user.fullName}</td>
+                                            <td >${user.username}</td>
+                                            <td >${user.email}</td>
+                                            <td >${user.status == true ? 'Active' : 'Disable'}</td>
+                                            <td >${user.activeCode}</td>
+                                            <td >${user.timeFailed}</td>
+                                            <td >${authTag}</td>
+                                            <td >${user.createdAt}</td>
+                                            <td >${user.updatedAt}</td>
+                                            <td>
+                                                  <button class="btn btn-outline-primary">${user.status == true ? 'Active' : 'Disable'}</button>
+                                                    <button class="btn btn-outline-primary" onclick="editUser(${user})">Edit</button>
+                                                    <button class="btn btn-outline-danger" data-id="${user.id}"
+                                                                    onclick="deleteCategory(this, this.getAttribute('data-id'))">Delete
+                                                    </button>
+                                            </td>
+                                        </tr>
+                                    `).insertAfter('#keep-user');
+                                } else
+                                    updateRow(user);
+                            }
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                });
+
+                function resetProductModal() {
+                    const form = $('#product-form');
+                    $('#product-form')[0].action = '/api/user';
+                    form.find('img').attr('src', '');
+                    form.find('input[name="id"]').val('');
+                    form.find('input[name="fullName"]').val('');
+                    form.find('input[name="username"]').val('');
+                    form.find('input[name="email"]').val('');
+                    form.find('input[name="password"]').val('');
+                    form.find('input[type="authorities"]').val(null);
+                    form.find('#btn-action').text('Create');
+                }
+
+                function editUser(user) {
+                    console.log(user)
+                    resetProductModal();
+                    const form = $('#product-form');
+                    form[0].action = '/api/user/' + user.id;
+                    form.find('img').attr('src', user.imageProfile);
+                    form.find('input[name="id"]').val(user.id);
+                    form.find('input[name="fullName"]').val(user.fullName);
+                    form.find('input[name="username"]').val(user.username);
+                    form.find('input[name="email"]').val(user.email);
+                    form.find('input[name="password"]').val(user.password);
+                    form.find('input[type="authorities"]').val(user.authorities[0].id);
+                    form.find('#btn-action').text('Update');
+                    $('#addProduct').modal('show');
+                }
+
+                function deleteUser(e, id) {
+                    console.log('delete user: ' + id);
+                    confirm('Are you sure you want to delete this user?') && $.ajax({
+                        url: '/api/user/' + id,
+                        method: 'DELETE',
+                        success: function (data) {
+                            if (data.result == 'SUCCESS') {
+                                e.parentElement.parentElement.remove();
+                            }
+                            console.log(data);
+                            alert(data.message);
+                        },
+                        error: function (err) {
+                            console.log(err);
+                        }
+                    });
+                }
+
+                function updateRow(user) {
+                    console.log('update row + ' + user);
+                    const trTag = $('#user-' + user.id + ' td');
+                    $(trTag[0]).find('img').attr('src', user.imageProfile);
+                    $(trTag[1]).text(user.fullName);
+                    $(trTag[2]).text(user.username);
+                    $(trTag[3]).text(user.email);
+                    $(trTag[4]).text(user.status == true ? 'Active' : 'Inactive');
+                    $(trTag[5]).text(user.activeCode);
+                    $(trTag[6]).text(user.timeFailed);
+                    $(trTag[7]).text(user.authorities.map(auth => auth.authorityName).join(' - '));
+                    $(trTag[8]).text(user.createdDate);
+                    $(trTag[9]).text(user.updatedDate);
+                    $(trTag[10]).find('button')[1].onclick = function () {
+                        editUser(user);
+                    };
+                }
+
+                $(document).ready(() => {
+                    $('#open-product-modal').click(() => {
+                        resetProductModal();
+                    });
+                });
+            </script>
+        </div>
+    </div>
+</div>
+<div class="main-content container mt-2">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item " aria-current="page"><a href="/admin">Dashboard</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Users</li>
+        </ol>
+    </nav>
+
+    <button class="btn btn-outline-primary p-1 mb-2" type="button" id="open-product-modal" data-bs-toggle="modal"
+            data-bs-target="#addProduct">Add new
+    </button>
+    <table class="table table-hover table-bordered text-center">
+        <caption th:if="${users.getTotalElements() == 0}" class="text-center">Empty</caption>
+        <thead>
+        <tr>
+            <th></th>
+            <th>Fullname</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Activation Code</th>
+            <th>Time Login Failed</th>
+            <th>Authorities</th>
+            <th>Created Date</th>
+            <th>Updated Date</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr id="keep-user"></tr>
+        <tr th:each="user : ${users.getContent()}" th:id="|user-${user.id}|">
+            <td>
+                <img style="height: 50px; width: 50px" th:src="${user.imageProfile}">
+            </td>
+            <td th:text="${user.fullName}"></td>
+            <td th:text="${user.username}"></td>
+            <td th:text="${user.email}"></td>
+            <td th:text="${user.status == true ? 'Active' : 'Disable'}"></td>
+            <td th:text="${user.activeCode}"></td>
+            <td th:text="${user.timeFailed}"></td>
+            <td th:text="${user.createdAt}"></td>
+            <td th:text="${user.updatedAt}"></td>
+            <td>
+                <span th:each="auth : ${user.authorities}" th:text="${auth.authorityName + ' - '}"/>
+            </td>
+            <td>
+                <button class="btn btn-outline-primary"
+                        th:text="${user.status == true ? 'Disable' : 'Active'}"></button>
+                <button class="btn btn-outline-primary" th:onclick="editUser([[${user}]])">Edit</button>
+                <button class="btn btn-outline-danger" th:data-id="${user.id}"
+                        onclick="deleteUser(this, this.getAttribute('data-id'))">Delete
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <ul class="pagination mt-2">
+        <li class="page-item" th:if="${!users.isFirst()}"><a class="page-link"
+                                                             th:href="${'?page='+ (users.getNumber()-1)}">Previous</a>
+        </li>
+        <li th:class="|page-item ${pageIndex == users.getNumber() ? 'active' : ''}|"
+            th:each="pageIndex : ${#numbers.sequence( 0, __${users.getTotalPages()-1}__)}"><a
+                class="page-link" th:href="|?page=${pageIndex}|" th:text="${pageIndex+1}"></a></li>
+        <li class="page-item" th:if="${!users.isLast()}"><a class="page-link"
+                                                            th:href="${'?page='+(users.getNumber()+1)}">Next</a>
+        </li>
+    </ul>
+</div>
+</body>
+</html>

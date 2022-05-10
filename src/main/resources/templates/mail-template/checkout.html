@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanks for buying</title>
+</head>
+<body>
+<h5
+        style="text-align: center; border-bottom: 1px solid gainsboro; color: turquoise; padding-bottom: 5px;">
+    Thanks for shopping with us <br> Your order is processing, we will notice to you later!</h5>
+<p>
+    <strong>Invoice ID:</strong> <span id="invoice-id" th:text="|#${order.id}|"></span>
+</p>
+<p>
+    <strong>Customer Name:</strong> <span id="customer-name" th:text="${order.cusName}"></span>
+</p>
+<p>
+    <strong>Customer Phone:</strong> <span id="customer-phone" th:text="${order.phone}"></span>
+</p>
+<p>
+    <strong>Customer Address:</strong> <span id="customer-address"th:text="|${order.address.detail}, ${order.address.wardId.name}, ${order.address.districtId.name}, ${order.address.provinceId.name}|"></span>
+</p>
+<p>
+    <strong>Invoice Date:</strong> <span id="invoice-date" th:text="${order.createDate}"></span>
+</p>
+<p>
+    <strong>Invoice Status:</strong> <span id="invoice-status" th:text="${order.status}"></span>
+</p>
+<p>
+    <strong>Products:</strong> <br>
+<table
+        style="text-align: center; border-collapse: collapse; width: 100%;border: 1px solid gainsboro; ">
+    <thead style="width: 100%;     background-color: bisque;">
+    <tr style=" display:grid;grid-template-columns: 25% 25% 25% 25%">
+        <th style="border: 1px solid gainsboro">Name</th>
+        <th style="border: 1px solid gainsboro">Quantity</th>
+        <th style="border: 1px solid gainsboro">Price</th>
+        <th style="border: 1px solid gainsboro">SubTotal</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr style=" display:grid;grid-template-columns: 25% 25% 25% 25%" th:each="c : ${cart}">
+        <td style="border: 1px solid gainsboro" th:text="${c.value.getProduct().getName()}"></td>
+        <td style="border: 1px solid gainsboro" th:text="${c.value.quantity}"></td>
+        <td style="border: 1px solid gainsboro" th:text="|$${c.value.price}"></td>
+        <td style="border: 1px solid gainsboro" th:text="|$${c.value.price * c.value.quantity}|"></td>
+    </tr>
+    </tbody>
+</table>
+</p>
+<p>
+    <strong>Total Price:</strong> <span id="invoice-total" th:text="|$${order.totalPrice}|"></span>
+</p>
+</body>
+</html>

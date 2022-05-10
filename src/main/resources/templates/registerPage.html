@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{/component/site :: head}"/>
+<body>
+<style>
+    html, body {
+        height: 80%;
+        width: 100%;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+    }
+</style>
+<div class="container mt-3 d-flex justify-content-center align-items-center h-100 w-100">
+    <form th:action="@{/register}" method="post" th:object="${userRegisterRequest}"
+          style="width: 600px; background-color: whitesmoke; padding: 20px; height: fit-content;">
+        <h2 class="text-center">Registration</h2>
+        <div class="mb-3 mt-3">
+            <label for="fullName">Fullname:</label>
+            <input type="text" class="form-control" id="fullName" placeholder="Enter your name" th:field="*{fullName}">
+        </div>
+        <div class="mb-3 mt-3">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" required id="username" placeholder="Enter username" th:field="*{username}">
+        </div>
+        <div class="mb-3 mt-3">
+            <label for="email">Email:</label>
+            <input type="email" class="form-control" required id="email" placeholder="Enter email" th:field="*{email}">
+        </div>
+        <div class="mb-3">
+            <label for="pwd">Password:</label>
+            <input type="password" class="form-control" required id="pwd" placeholder="Enter password" th:field="*{password}">
+        </div>
+        <p class="m-2 p-2 bg-warning" th:if="${message != null}" th:text="${message}"/>
+        <button type="submit" class="btn btn-primary">Register</button>
+        <a href="/login" class="btn btn-primary">Login</a>
+    </form>
+</div>
+</body>
+</html>
