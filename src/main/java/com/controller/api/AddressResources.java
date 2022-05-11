@@ -26,6 +26,7 @@ public class AddressResources {
         return ResponseDto.of(this.districtRepository.findAllByProvinceId(provinceId), "Get districts");
     }
 
+
     @GetMapping("wards/{districtId}")
     public Object getWards(@PathVariable Integer districtId) {
         return ResponseDto.of(this.wardRepository.findByDistrictId(districtId), "Get wards");
