@@ -14,9 +14,6 @@ import com.service.UserService;
 import com.utils.Base64Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -33,12 +30,12 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final MailService mailService;
     private final PasswordEncoder passwordEncoder;
 
+
     public UserServiceImpl(UserRepository userRepository, AuthorityRepository authorityRepository, MailService mailService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.authorityRepository = authorityRepository;
         this.mailService = mailService;
         this.passwordEncoder = passwordEncoder;
-
 //        CustomUserDetail customUserDetail = new CustomUserDetail(this.userRepository.findById(1l).orElseThrow(() -> new RuntimeException("authority admin not found")));
 //        Authentication auth = new UsernamePasswordAuthenticationToken(customUserDetail, null, customUserDetail.getAuthorities());
 //        SecurityContextHolder.getContext().setAuthentication(auth);
@@ -189,6 +186,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setActiveCode(0);
         user.setUpdatedAt(new Date());
         return this.userRepository.save(user) != null;
+    }
+
+//    @Override
+//    public boolean loginByUserPassWord(UserDto userDto) {
+//        return false;
+//    }
+
+    @Override
+    public boolean loginByUserPassWord(UserDto userDto) {
+        User user = userRepository.findByUsername(userDto.getUsername());
+        return this.userRepository.findByUsernameAndPassword(user.getUsername(),user.getPassword());
+    }
+
+    @Override
+    public boolean addUserNotAu2(String username, String password) {
+        return false;
     }
 
     int getCodeRandom() {
